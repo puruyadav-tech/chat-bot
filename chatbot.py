@@ -13,41 +13,52 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 
-# ✅ Dark theme and UI styling first
+# 🌙 Set Streamlit page config
 st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
 
+# 🖤 Dark mode styling
 st.markdown("""
     <style>
     body {
-        background-color: #1e1e1e;
-        color: white;
-        font-family: 'Inter', sans-serif;
+        background-color: #121212;
+        color: #ffffff;
     }
     .stTextInput > div > input {
-        background-color: #2c2c2c;
+        background-color: #1f1f1f;
         color: white;
-        border-radius: 8px;
     }
-    h1, p {
-        color: white;
+    .message-bubble {
+        border-radius: 15px;
+        padding: 12px;
+        margin: 10px 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .user-bubble {
+        background-color: #2a2a2a;
+    }
+    .bot-bubble {
+        background-color: #1e1e1e;
+    }
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin-top: 5px;
     }
     </style>
 """, unsafe_allow_html=True)
 
+# 💬 Header
 st.markdown("""
-    <div style='text-align: center;'>
-        <h1>AI ChatBot</h1>
-        <p>Your intelligent assistant with image generation</p>
+    <div style='text-align: center; margin-bottom: 20px;'>
+        <h1 style='color: white;'>🤖 AI ChatBot</h1>
+        <p style='color: #cccccc;'>Your intelligent assistant with image generation</p>
     </div>
 """, unsafe_allow_html=True)
 
-# ✅ Initialize session state
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "bot", "text": "Hello! I'm your AI assistant. I can chat with you and generate images. What would you like to do today?"}
-    ]
-
-# ✅ Load data
+# 🧠 Load chatbot data
 df = pd.DataFrame({
     "content": [
         "Python is a popular programming language used for web development, data analysis, AI, and more.",
@@ -80,12 +91,10 @@ df = pd.DataFrame({
         "Shakespeare wrote plays such as Hamlet, Macbeth, and Romeo and Juliet.",
         "COVID-19 is a disease caused by the SARS-CoV-2 virus.",
         "The brain is the control center of the human nervous system."
-         "raghav girlfriend is aarushi patidar"
-        "harshvardhan favourite teacher is mohit from DPS bhopal"
     ]
 })
 
-# ✅ Load models
+# 🚀 Load models
 @st.cache_resource(show_spinner=False)
 def load_models():
     embed_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -94,36 +103,43 @@ def load_models():
 
 embed_model, qa_model = load_models()
 
-# ✅ Embed content
 @st.cache_data(show_spinner=False)
 def compute_embeddings():
-    embeddings = df['content'].apply(lambda x: embed_model.encode(x))
-    return np.vstack(embeddings)
+    return np.vstack(df['content'].apply(lambda x: embed_model.encode(x)))
 
 doc_embeddings = compute_embeddings()
 
-# ✅ Similarity search
+# 🔍 Find most relevant context
 def get_most_similar_doc(query):
     query_embedding = embed_model.encode(query)
-    similarities = cosine_similarity([query_embedding], doc_embeddings)[0]
-    top_idx = np.argmax(similarities)
+    sims = cosine_similarity([query_embedding], doc_embeddings)[0]
+    top_idx = np.argmax(sims)
     return df.iloc[top_idx]['content']
 
-# ✅ Display chat history with avatars
+# 💬 Chat session
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "bot", "text": "Hello! I'm your AI assistant. I can chat with you and generate images. What would you like to do today?"}
+    ]
+
+# 🧾 Show chat messages
 for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(f"<div style='display: flex; align-items: center;'><img src='https://img.icons8.com/ios-filled/50/ffffff/user-male-circle.png' width='24' style='margin-right: 10px;'> <b>You:</b> {msg['text']}</div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div style='display: flex; align-items: center;'><img src='https://img.icons8.com/ios-filled/50/ffffff/robot-2.png' width='24' style='margin-right: 10px;'> <b>Bot:</b> {msg['text']}</div>", unsafe_allow_html=True)
+    avatar = "https://img.icons8.com/ios-filled/50/ffffff/user.png" if msg["role"] == "user" else "https://img.icons8.com/ios-filled/50/ffffff/robot-2.png"
+    bubble_class = "user-bubble" if msg["role"] == "user" else "bot-bubble"
+    st.markdown(f"""
+        <div class='message-bubble {bubble_class}'>
+            <img src="{avatar}" class="avatar">
+            <div><b>{'You' if msg['role'] == 'user' else 'Bot'}:</b> {msg['text']}</div>
+        </div>
+    """, unsafe_allow_html=True)
 
-# ✅ Input prompt
-query = st.text_input("Type your message or ask me to generate an image...")
+# ✍️ Input box
+query = st.text_input("Type your message...", key="input")
 
-# ✅ Chat response logic
 if query:
     st.session_state.messages.append({"role": "user", "text": query})
     context = get_most_similar_doc(query)
     prompt = f"Context: {context}\nQuestion: {query}"
-    response = qa_model(prompt, max_new_tokens=100)[0]['generated_text']
+    response = qa_model(prompt, max_new_tokens=100)[0]["generated_text"]
     st.session_state.messages.append({"role": "bot", "text": response})
     st.rerun()
