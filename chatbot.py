@@ -105,8 +105,8 @@ df = pd.DataFrame({
         "Shakespeare wrote plays such as Hamlet, Macbeth, and Romeo and Juliet.",
         "COVID-19 is a disease caused by the SARS-CoV-2 virus.",
         "The brain is the control center of the human nervous system."
-        " Raghav girlfriend is aarushi patidar"
-        "Harshvardhan favourite teacher is mohit from DPS Bhopal"
+        "raghav girlfriend is aarushi patidar"
+        "harshvardhan favourite teacher is mohit from DPS Bhopal"
     ]
 })
 
