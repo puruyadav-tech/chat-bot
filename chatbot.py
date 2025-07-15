@@ -121,14 +121,21 @@ if "messages" not in st.session_state:
 
 # 🧾 Show chat messages
 for msg in st.session_state.messages:
-    avatar = "https://img.icons8.com/ios-filled/50/ffffff/user.png" if msg["role"] == "user" else "https://img.icons8.com/ios-filled/50/ffffff/robot-2.png"
-    bubble_class = "user-bubble" if msg["role"] == "user" else "bot-bubble"
-    st.markdown(f"""
-        <div class='message-bubble {bubble_class}'>
-            <img src="{avatar}" class="avatar">
-            <div><b>{'You' if msg['role'] == 'user' else 'Bot'}:</b> {msg['text']}</div>
-        </div>
-    """, unsafe_allow_html=True)
+    if msg["role"] == "user":
+        st.markdown(f"""
+            <div class='chat-message' style='display: flex; align-items: center;'>
+                <img class='chat-avatar' src='https://img.icons8.com/ios-filled/50/ffffff/user-male-circle.png' width='24'>
+                <span><b>You:</b> {msg['text']}</span>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+            <div class='chat-message' style='display: flex; align-items: center;'>
+                <img class='chat-avatar' src='https://img.icons8.com/ios-filled/50/ffffff/robot-2.png' width='24'>
+                <span><b>Bot:</b> {msg['text']}</span>
+            </div>
+        """, unsafe_allow_html=True)
+
 
 # ✍️ Input box
 with st.form(key="chat_form", clear_on_submit=True):
