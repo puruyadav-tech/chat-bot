@@ -13,13 +13,41 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 
-# Initialize session state for chat history
+# ✅ Dark theme and UI styling first
+st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
+
+st.markdown("""
+    <style>
+    body {
+        background-color: #1e1e1e;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+    .stTextInput > div > input {
+        background-color: #2c2c2c;
+        color: white;
+        border-radius: 8px;
+    }
+    h1, p {
+        color: white;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <div style='text-align: center;'>
+        <h1>AI ChatBot</h1>
+        <p>Your intelligent assistant with image generation</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# ✅ Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "bot", "text": "Hello! I'm your AI assistant. I can chat with you and generate images. What would you like to do today?"}
     ]
 
-# Load data
+# ✅ Load data
 df = pd.DataFrame({
     "content": [
         "Python is a popular programming language used for web development, data analysis, AI, and more.",
@@ -52,10 +80,12 @@ df = pd.DataFrame({
         "Shakespeare wrote plays such as Hamlet, Macbeth, and Romeo and Juliet.",
         "COVID-19 is a disease caused by the SARS-CoV-2 virus.",
         "The brain is the control center of the human nervous system."
+         "raghav girlfriend is aarushi patidar"
+        "harshvardhan favourite teacher is mohit from DPS bhopal"
     ]
 })
 
-# Load models
+# ✅ Load models
 @st.cache_resource(show_spinner=False)
 def load_models():
     embed_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -64,7 +94,7 @@ def load_models():
 
 embed_model, qa_model = load_models()
 
-# Embed content (only once)
+# ✅ Embed content
 @st.cache_data(show_spinner=False)
 def compute_embeddings():
     embeddings = df['content'].apply(lambda x: embed_model.encode(x))
@@ -72,52 +102,24 @@ def compute_embeddings():
 
 doc_embeddings = compute_embeddings()
 
-# Similarity search
+# ✅ Similarity search
 def get_most_similar_doc(query):
     query_embedding = embed_model.encode(query)
     similarities = cosine_similarity([query_embedding], doc_embeddings)[0]
     top_idx = np.argmax(similarities)
     return df.iloc[top_idx]['content']
 
-# Streamlit UI
-st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
-st.markdown("""
-    <style>
-    body {
-        background: #1e1e1e;
-        color: white;
-        font-family: 'Inter', sans-serif;
-    }
-    .stChatMessage {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-    .stTextInput > div > input {
-        background-color: #2c2c2c;
-        color: white;
-        border-radius: 8px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-    <div style='text-align: center;'>
-        <h1 style='color: white;'>AI ChatBot</h1>
-        <p style='color: white;'>Your intelligent assistant with image generation</p>
-    </div>
-""", unsafe_allow_html=True)
-
-# Display chat history with avatars
+# ✅ Display chat history with avatars
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.markdown(f"<div style='display: flex; align-items: center;'><img src='https://img.icons8.com/ios-filled/50/ffffff/user-male-circle.png' width='24' style='margin-right: 10px;'> <b>You:</b> {msg['text']}</div>", unsafe_allow_html=True)
     else:
         st.markdown(f"<div style='display: flex; align-items: center;'><img src='https://img.icons8.com/ios-filled/50/ffffff/robot-2.png' width='24' style='margin-right: 10px;'> <b>Bot:</b> {msg['text']}</div>", unsafe_allow_html=True)
 
+# ✅ Input prompt
 query = st.text_input("Type your message or ask me to generate an image...")
 
+# ✅ Chat response logic
 if query:
     st.session_state.messages.append({"role": "user", "text": query})
     context = get_most_similar_doc(query)
