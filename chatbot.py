@@ -134,12 +134,13 @@ for msg in st.session_state.messages:
     """, unsafe_allow_html=True)
 
 # ✍️ Input box
-query = st.text_input("Type your message...", key="input")
+with st.form(key="chat_form", clear_on_submit=True):
+    query = st.text_input("Type your message or ask me to generate an image...", key="chat_input")
+    submitted = st.form_submit_button("Send")
 
-if query:
+if submitted and query:
     st.session_state.messages.append({"role": "user", "text": query})
     context = get_most_similar_doc(query)
     prompt = f"Context: {context}\nQuestion: {query}"
-    response = qa_model(prompt, max_new_tokens=100)[0]["generated_text"]
+    response = qa_model(prompt, max_new_tokens=100)[0]['generated_text']
     st.session_state.messages.append({"role": "bot", "text": response})
-    st.rerun()
