@@ -73,8 +73,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 🧠 Load chatbot data
-
-    content = [
+df = pd.DataFrame({
+    "content":[
         "Python is a popular programming language used for web development, data analysis, AI, and more.",
         "Machine learning is a field of AI that allows computers to learn from data without being explicitly programmed.",
         "Paris is the capital of France.",
@@ -108,7 +108,8 @@ st.markdown("""
        "Raghav's girlfriend is Aarushi Patidar.",
        "Harshvardhan's favourite teacher is Mohit from DPS Bhopal."
     ]
-df = pd.DataFrame({"content": content})
+})
+
 
 # 🚀 Load models
 @st.cache_resource(show_spinner=False)
