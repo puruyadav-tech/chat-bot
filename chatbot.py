@@ -20,32 +20,29 @@ st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
 st.markdown("""
     <style>
     body {
-        background-color: #121212;
-        color: #ffffff;
-    }
-    .stTextInput > div > input {
-        background-color: #1f1f1f;
+        background-color: #3b0a5c;
         color: white;
     }
-    .message-bubble {
-        border-radius: 15px;
-        padding: 12px;
-        margin: 10px 0;
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
+    html, .stApp {
+        background: linear-gradient(135deg, #3b0a5c 0%, #8e2de2 100%) !important;
+        color: white;
     }
-    .user-bubble {
-        background-color: #2a2a2a;
+    .stTextInput > div > input {
+        background-color: #4d1d6b;
+        color: white;
+        border-radius: 8px;
     }
-    .bot-bubble {
-        background-color: #1e1e1e;
+    div.stTextInput > label {
+        color: white;
     }
-    .avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        margin-top: 5px;
+    .chat-message {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+    }
+    .chat-avatar {
+        margin-right: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
