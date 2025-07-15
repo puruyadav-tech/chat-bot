@@ -16,6 +16,23 @@ from transformers import pipeline
 # 🌙 Set Streamlit page config
 st.set_page_config(page_title="AI ChatBot", page_icon="🤖", layout="centered")
 
+# Sidebar chat history
+st.sidebar.title("💬 Chat History")
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "bot", "text": "Hello! I'm your AI assistant. I can chat with you and generate images. What would you like to do today?"}
+    ]
+
+# Display past chat in sidebar
+for i, msg in enumerate(st.session_state.messages):
+    if msg['role'] == 'user':
+        st.sidebar.markdown(f"**You:** {msg['text']}")
+    elif msg['role'] == 'bot':
+        st.sidebar.markdown(f"**Bot:** {msg['text']}")
+
+
 # 🖤 Dark mode styling
 st.markdown("""
     <style>
