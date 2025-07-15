@@ -74,7 +74,7 @@ st.markdown("""
 
 # 🧠 Load chatbot data
 
-    "content": [
+    content = [
         "Python is a popular programming language used for web development, data analysis, AI, and more.",
         "Machine learning is a field of AI that allows computers to learn from data without being explicitly programmed.",
         "Paris is the capital of France.",
